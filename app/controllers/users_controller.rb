@@ -40,6 +40,9 @@ class UsersController < ApplicationController
 
   def add_employee
     @users = User.where("domain = ? && role_type like 'employee' && manager_id = '' ",@user.domain)
+    if @users.empty?
+      gflash :now, :error => "There is no unallocated employees"
+    end
     authorize @users
     if params[:user_id].present?
       User.where("id in (?)",params[:user_id].values.map(&:to_i)).update_all(:manager_id => params[:id])
